@@ -61,4 +61,15 @@ spec:
     targetPort: 8080 #CHANGE
   selector:
     app: spring-demo
-
+---
+apiVersion: v1
+kind: Route
+metadata:
+  name: spring-demo
+spec:
+  path: "/"
+  port:
+    targetPort: port-8080 
+  to:
+    kind: Service
+    name: spring-demo
