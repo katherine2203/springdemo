@@ -21,9 +21,9 @@ stages:
   - job: BuildJob
 #    dependsOn: LoginToIBMCloud
     steps:
-#    - task: DockerInstaller@0
-#      inputs:
- #       dockerVersion: '20.10.5'
+    - task: DockerInstaller@0
+      inputs:
+        dockerVersion: '20.10.5'
     - bash: docker --version
     - bash: docker login -u iamapikey -p $(apikey) us.icr.io
  #   - bash:  ibmcloud plugin install container-registry
