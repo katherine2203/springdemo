@@ -11,31 +11,16 @@ pool: prueba
 stages:
 - stage: Build
   jobs:
-#  - job: InstallCLI
-#    steps:
-#    - bash: curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-#  - job: LoginToIBMCloud
-#    dependsOn: InstallCLI
-#    steps:
-#    - bash: ibmcloud login --apikey $(apikey) -r us-south
   - job: BuildJob
-#    dependsOn: LoginToIBMCloud
     steps:
-#    - task: DockerInstaller@0
-#      inputs:
-#        dockerVersion: '20.10.5'
-#    - bash: docker --version
-    - task: Bash@3
-      inputs:
-        targetType: 'inline'
-        script: 'docker login -u iamapikey -p $(apikey) us.icr.io'
-#    - bash: docker login -u iamapikey -p $(apikey) us.icr.io
-#    - bash:  ibmcloud plugin install container-registry
-#  - bash: ibmcloud cr login
     - task: Bash@3
       inputs:
         targetType: 'inline'
         script: 'docker --version'
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: 'docker login -u iamapikey -p $(apikey) us.icr.io'
     - task: Docker@2
       displayName: Build an image
       inputs:
@@ -52,7 +37,14 @@ stages:
     - job: DevDeployJob
       steps:
       - bash: echo DeployJob
-#      - task: oc-setup@2
-#        inputs:
-#          connectionType: 'OpenShift Connection Service'
-#          openshiftService: 'roks-cluster'
+      - task: oc-setup@2
+        inputs:
+          connectionType: 'OpenShift Connection Service'
+          openshiftService: 'roks-cluster'
+          version: '4.6.23'
+# A script task making use of 'oc'
+      - script: |
+          oc new-project $(project_name)
+          oc get secret all-icr-io -n default -o yaml | sed 's/default/$(project_name)/g' | oc create -n $(project_name) -f -
+          oc patch -n $(project_name) serviceaccount/default --type='json' -p='[{"op":"add","path":"/imagePullSecrets/-","value":{"name":"all-icr-io"}}]'
+          oc apply -f $(System.DefaultWorkingDirectory)/openshift/deployment.yaml -n $(project_name)
