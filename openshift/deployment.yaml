@@ -72,4 +72,4 @@ spec:
     targetPort: port-8080 
   to:
     kind: Service
-    name: spring-demo
+    name: spring-demo-service
