@@ -25,8 +25,12 @@ stages:
 #      inputs:
 #        dockerVersion: '20.10.5'
 #    - bash: docker --version
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: 'docker login -u iamapikey -p $(apikey) us.icr.io'
 #    - bash: docker login -u iamapikey -p $(apikey) us.icr.io
- #   - bash:  ibmcloud plugin install container-registry
+#    - bash:  ibmcloud plugin install container-registry
 #  - bash: ibmcloud cr login
     - task: Bash@3
       inputs:
