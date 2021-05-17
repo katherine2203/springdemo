@@ -67,7 +67,6 @@ kind: Route
 metadata:
   name: spring-demo
 spec:
-  path: "/"
   port:
     targetPort: port-8080 
   to:
