@@ -1,12 +1,8 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
 
 trigger:
 - master
 
-pool: prueba
+pool: demo
 
 stages:
 - stage: Build
@@ -30,13 +26,12 @@ stages:
         tags: 'v1'
     
 - stage: Deploy
-#   variables:
-#     environment: Dev
+
   dependsOn: Build
   jobs:
     - job: DevDeployJob
       variables:
-        project_name: azure-project
+        project_name: azure-demo
 
       steps:
       - bash: echo DeployJob
@@ -45,7 +40,7 @@ stages:
           connectionType: 'OpenShift Connection Service'
           openshiftService: 'roks-cluster'
           version: '4.6.23'
-# A script task making use of 'oc'
+
       - script: |
           oc new-project $(project_name)
           oc get secret all-icr-io -n default -o yaml | sed 's/default/$(project_name)/g' | oc create -n $(project_name) -f -
